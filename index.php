@@ -14,34 +14,31 @@
 
     /* Select data from database */
     $rows = $db->selectData('MyGuests', array('order_by'=>'id DESC'));
-    if(!empty($rows)) { 
-        foreach($rows as $row) { 
-            echo $row['firstname']; 
-        }
-    }
 
     /* Insert data */
     $tblName = "MyGuests";
     $userData = array(
-            'firstname' => 'yiannis'
+            'firstname' => 'test'
         );
     $insertedData = $db->insertData($tblName,$userData);
 
     /* Update data */
-    $userData1 = array(
-                'firstname' => 'yiannis update'
-            );
-    $condition = array('id' => 3);
-    $updatedData = $db->updateData($tblName,$userData1,$condition);
+    // $userData1 = array(
+    //             'firstname' => 'yiannis update'
+    //         );
+    // $condition = array('id' => 3);
+    // $updatedData = $db->updateData($tblName,$userData1,$condition);
 
-    /* Delete data */
-    $condition = array('id' => 3);
-    $deletedData =$db->deleteData($tblName,$condition);
+    // /* Delete data */
+    // $condition = array('id' => 3);
+    // $deletedData =$db->deleteData($tblName,$condition);
 
     /* Check if all queries execute correctly , then commit
     *  the changes, else rollback the transaction
     */
-    if (!$insertedData && !$updatedData && !$deletedData) 
+    // if (!$insertedData && !$updatedData && !$deletedData) 
+
+    if (!empty($insertedData)) 
     {
         $db->commitTransaction();
     } else 
