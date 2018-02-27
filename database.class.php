@@ -86,10 +86,12 @@
             $sql = 'SELECT ';
             $sql .= array_key_exists("select",$conditions)?$conditions['select']:'*';
             $sql .= ' FROM '.$table;
+
             if(array_key_exists("where",$conditions))
             {
                 $sql .= ' WHERE ';
                 $i = 0;
+
                 foreach($conditions['where'] as $key => $value)
                 {
                     $pre = ($i > 0)?' AND ':'';
@@ -117,6 +119,7 @@
             
             if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
             {
+
                 switch($conditions['return_type'])
                 {
                     case 'count':
@@ -128,6 +131,7 @@
                     default:
                         $data = '';
                 }
+
             } else
             {
                 if($query->rowCount() > 0)
@@ -135,6 +139,7 @@
                     $data = $query->fetchAll();
                 }
             }
+
             return !empty($data)?$data:false;
         }
 
@@ -150,25 +155,21 @@
                 $columns = '';
                 $values  = '';
                 $i = 0;
-                // if(!array_key_exists('created',$data))
-                // {
-                //     $data['created'] = date("Y-m-d H:i:s");
-                // }
-                // if(!array_key_exists('modified',$data))
-                // {
-                //     $data['modified'] = date("Y-m-d H:i:s");
-                // }
 
                 $columnString = implode(',', array_keys($data));
                 $valueString = ":".implode(',:', array_keys($data));
                 $sql = "INSERT INTO ".$table." (".$columnString.") VALUES (".$valueString.")";
                 $query = $this->connection->prepare($sql);
+
                 foreach($data as $key=>$val)
                 {
                      $query->bindValue(':'.$key, $val);
                 }
+
                 $insert = $query->execute();
+
                 return $insert?$this->connection->lastInsertId():false;
+                
             } else
             {
                 return false;
@@ -188,16 +189,14 @@
                 $colvalSet = '';
                 $whereSql = '';
                 $i = 0;
-                // if(!array_key_exists('modified',$data))
-                // {
-                //     $data['modified'] = date("Y-m-d H:i:s");
-                // }
+
                 foreach($data as $key=>$val)
                 {
                     $pre = ($i > 0)?', ':'';
                     $colvalSet .= $pre.$key."='".$val."'";
                     $i++;
                 }
+
                 if(!empty($conditions)&& is_array($conditions))
                 {
                     $whereSql .= ' WHERE ';
@@ -209,10 +208,13 @@
                         $i++;
                     }
                 }
+
                 $sql = "UPDATE ".$table." SET ".$colvalSet.$whereSql;
                 $query = $this->connection->prepare($sql);
                 $update = $query->execute();
+
                 return $update?$query->rowCount():false;
+
             } else
             {
                 return false;
