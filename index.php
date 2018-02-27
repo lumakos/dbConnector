@@ -8,6 +8,8 @@
     /* Connect to database */
     $db->openConnection();
 
+    $db->startTransaction();
+
     $db->getStatement('SELECT * FROM MyGuests');
 
     /* Select data from database */
@@ -23,18 +25,29 @@
     $userData = array(
             'firstname' => 'yiannis'
         );
-    $db->insertData($tblName,$userData);
+    $insertedData = $db->insertData($tblName,$userData);
 
     /* Update data */
     $userData1 = array(
                 'firstname' => 'yiannis update'
             );
     $condition = array('id' => 3);
-    $db->updateData($tblName,$userData1,$condition);
+    $updatedData = $db->updateData($tblName,$userData1,$condition);
 
     /* Delete data */
     $condition = array('id' => 3);
-    $db->deleteData($tblName,$condition);
+    $deletedData =$db->deleteData($tblName,$condition);
+
+    /* Check if all queries execute correctly , then commit
+    *  the changes, else rollback the transaction
+    */
+    if (!$insertedData && !$updatedData && !$deletedData) 
+    {
+        $db->commitTransaction();
+    } else 
+    {
+        $db->rollbackTransaction();
+    }
 
     /* Kill connection */
     $db->closeConnection();

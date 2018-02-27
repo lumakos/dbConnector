@@ -77,6 +77,30 @@
         }
 
         /**
+         * Start transaction
+         */
+        public function startTransaction()
+        {
+            $this->connection->beginTransaction();
+        }
+
+        /**
+         * Commit the changes
+         */
+        public function commitTransaction()
+        {
+            $this->connection->commit();
+        }
+
+        /**
+         * Rollback the changes
+         */
+        public function rollbackTransaction()
+        {
+            $this->connection->rollBack();
+        }
+
+        /**
          * Returns rows from the database based on the conditions
          * @param string name of the table
          * @param array select, where, order_by, limit and return_type conditions
@@ -169,7 +193,7 @@
                 $insert = $query->execute();
 
                 return $insert?$this->connection->lastInsertId():false;
-                
+
             } else
             {
                 return false;
