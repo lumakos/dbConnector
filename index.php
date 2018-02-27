@@ -8,6 +8,16 @@
     /* Connect to database */
     $db->openConnection();
 
+    $db->getStatement('SELECT * FROM MyGuests');
+
+    /* Select data from database */
+    $rows = $db->selectData('MyGuests', array('order_by'=>'id DESC'));
+    if(!empty($rows)) { 
+        foreach($rows as $row) { 
+            echo $ow['firstname']; 
+        }
+    }
+    
     /* Kill connection */
     $db->closeConnection();
 ?>
