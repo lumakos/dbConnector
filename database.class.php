@@ -26,17 +26,6 @@
         }
 
         /**
-         * Get prepared statement
-         * @param string
-         * @return PDOStatement
-         */
-        public function getStatement($query)
-        {
-            $db = $this->openConnection();
-            return $db->prepare($query);
-        }
-
-        /**
          * @return bool
          */
         public function isConnected()

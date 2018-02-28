@@ -10,8 +10,6 @@
 
     $db->startTransaction();
 
-    $db->getStatement('SELECT * FROM MyGuests');
-
     /* Select data from database */
     $rows = $db->selectData('MyGuests', array('order_by'=>'id DESC'));
 
