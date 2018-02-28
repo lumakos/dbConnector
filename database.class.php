@@ -1,17 +1,33 @@
 <?php
 
     /**
-    * Database connection
-    */
-    class Database
+     * Define an Interface about database's functions
+     */
+    interface DatabaseManagerInterface
     {
+        public function isConnected();
+        public function closeConnection();
+        public function startTransaction();
+        public function commitTransaction();
+        public function rollbackTransaction();
+        public function selectData($table, $conditions = array());
+        public function insertData($table,$data);
+        public function updateData($table, $data, $conditions);
+        public function deleteData($table, $conditions);
+    }
 
-        private $dbDriver;
-        private $host;
-        private $username;
-        private $password;
-        private $dbName;
-        private $connection;
+    /**
+     * Define an Abstract class for all databases
+     * connections to extend
+     */
+    abstract class DatabaseManager implements DatabaseManagerInterface
+    {
+        protected $dbDriver;
+        protected $host;
+        protected $username;
+        protected $password;
+        protected $dbName;
+        protected $connection;
 
         /**
          * Constructor
@@ -33,30 +49,8 @@
             return ($this->connection instanceof PDO);
         }
 
-        /**
-         * @return PDO
-         */
-        public function openConnection()
-        {
-            if ($this->isConnected() != 1)
-            {
-                try 
-                {
-                    $this->connection = new PDO($this->dbDriver.":host=".$this->host.";dbname=".$this->dbName,$this->username,$this->password);
-                    echo "Successfull connection to database" . "\n";
-
-                    /* disable emulated prepared statements and use real prepared statements */
-                    $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-                    $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                } catch (PDOException $e) 
-                {
-                    die($e->getMessage());
-                }  
-            }
-            return $this->connection;
-            
-        }
-
+        abstract protected function openConnection();
+        
         /**
          * Kill connection
          */
@@ -257,6 +251,34 @@
             $delete = $this->connection->exec($sql);
             return $delete?$delete:false;
         }
+    }
 
+    /**
+     * Database connection
+     */
+    class Database extends DatabaseManager
+    {
+        /**
+         * @return PDO
+         */
+        public function openConnection()
+        {
+            if ($this->isConnected() != 1)
+            {
+                try 
+                {
+                    $this->connection = new PDO($this->dbDriver.":host=".$this->host.";dbname=".$this->dbName,$this->username,$this->password);
+                    echo "Successfull connection to database" . "\n";
+
+                    /* disable emulated prepared statements and use real prepared statements */
+                    $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+                    $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                } catch (PDOException $e) 
+                {
+                    die($e->getMessage());
+                }  
+            }
+            return $this->connection;    
+        }
     }
 ?>
