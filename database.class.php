@@ -272,7 +272,7 @@
             if ($this->isConnected() != 1)
             {
                 try 
-                {
+                {                    
                     $this->connection = new PDO($this->dbDriver.":host=".$this->host.";port=".$this->port.";charset=".$this->charset.";unix_socket=".$this->unixSocket.";dbname=".$this->dbName,$this->username,$this->password);
                     echo "Successfull connection to database" . "\n";
 
