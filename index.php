@@ -1,4 +1,5 @@
 <?php
+
     include_once 'database.class.php';
 
     $config = parse_ini_file('config.ini');

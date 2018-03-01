@@ -1,6 +1,6 @@
 <?php
 
-    include 'databaseManager.class.php';
+    include_once 'databaseManager.class.php';
 
     /**
      * Database connection
