@@ -24,21 +24,27 @@
     {
         protected $dbDriver;
         protected $host;
+        protected $port;
         protected $username;
         protected $password;
         protected $dbName;
+        protected $unixSocket;
+        protected $charset;
         protected $connection;
 
         /**
          * Constructor
          */
-        public function __construct($dbDriver, $host, $username, $password, $dbName)
+        public function __construct($dbDriver, $host, $port, $username, $password, $dbName, $unixSocket, $charset)
         {
             $this->dbDriver = $dbDriver;
             $this->host = $host;
+            $this->port = $port;
             $this->username = $username;
             $this->password = $password;
             $this->dbName = $dbName;
+            $this->unixSocket = $unixSocket;
+            $this->charset = $charset;
         }
 
         /**
@@ -167,7 +173,7 @@
                 $valueString = ":".implode(',:', array_keys($data));
                 $sql = "INSERT INTO ".$table." (".$columnString.") VALUES (".$valueString.")";
                 $query = $this->connection->prepare($sql);
-
+                
                 foreach($data as $key=>$val)
                 {
                      $query->bindValue(':'.$key, $val);
@@ -267,7 +273,7 @@
             {
                 try 
                 {
-                    $this->connection = new PDO($this->dbDriver.":host=".$this->host.";dbname=".$this->dbName,$this->username,$this->password);
+                    $this->connection = new PDO($this->dbDriver.":host=".$this->host.";port=".$this->port.";charset=".$this->charset.";unix_socket=".$this->unixSocket.";dbname=".$this->dbName,$this->username,$this->password);
                     echo "Successfull connection to database" . "\n";
 
                     /* disable emulated prepared statements and use real prepared statements */

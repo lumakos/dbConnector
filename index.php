@@ -3,7 +3,7 @@
 
     $config = parse_ini_file('config.ini');
 
-    $db = new Database($config['driver'], $config['host'], $config['username'], $config['password'], $config['dbname']);
+    $db = new Database($config['driver'], $config['host'], $config['port'], $config['username'], $config['password'], $config['dbname'], $config['unix_socket'], $config['charset']);
 
     /* Connect to database */
     $db->openConnection();
@@ -16,7 +16,7 @@
     /* Insert data */
     $tblName = "MyGuests";
     $userData = array(
-            'firstname' => 'test'
+            'firstname' => 'lumakos'
         );
     $insertedData = $db->insertData($tblName,$userData);
 
