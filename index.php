@@ -17,7 +17,7 @@
     /* Insert data */
     $tblName = "MyGuests";
     $userData = array(
-            'firstname' => 'lumakos'
+            'firstname' => 'ioannis'
         );
     $insertedData = $db->insertData($tblName,$userData);
 
