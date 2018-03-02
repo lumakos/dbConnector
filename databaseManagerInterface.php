@@ -9,5 +9,6 @@
         public function startTransaction();
         public function commitTransaction();
         public function rollbackTransaction();
+        public function storeCacheFile($sqlCacheName, $data);
     }
 ?>

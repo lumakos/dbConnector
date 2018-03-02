@@ -13,13 +13,14 @@
 
     /* Select data from database */
     $rows = $db->selectData('MyGuests', array('order_by'=>'id DESC'));
+    // var_dump($rows);
 
     /* Insert data */
-    $tblName = "MyGuests";
-    $userData = array(
-            'firstname' => 'ioannis'
-        );
-    $insertedData = $db->insertData($tblName,$userData);
+    // $tblName = "MyGuests";
+    // $userData = array(
+    //         'firstname' => 'ioannis'
+    //     );
+    // $insertedData = $db->insertData($tblName,$userData);
 
     /* Update data */
     // $userData1 = array(

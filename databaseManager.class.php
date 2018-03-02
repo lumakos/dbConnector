@@ -53,9 +53,19 @@
         abstract protected function deleteData($table, $conditions);
 
         /**
+         * Cache the results of an SQL query to the file system
+         */
+        abstract protected function queryCaching($sqlCacheName, $cacheFile, $cacheTimeSeconds);
+
+        /**
+         * Execute functionality for query caching
+         */
+        abstract protected function executeQueryCaching($sql);
+
+        /**
          * Constructor
          */
-        public function __construct($dbDriver, $host, $port, $username, $password, $dbName, $unixSocket, $charset)
+        protected function __construct($dbDriver, $host, $port, $username, $password, $dbName, $unixSocket, $charset)
         {
             $this->dbDriver = $dbDriver;
             $this->host = $host;
@@ -105,6 +115,17 @@
         public function rollbackTransaction()
         {
             $this->connection->rollBack();
-        }       
+        }
+
+        /**
+         * Store cache file in cache folder
+         */
+        public function storeCacheFile($sqlCacheName, $data)
+        {   
+            $filew = fopen("cache/" . $sqlCacheName, 'w');
+            fwrite($filew, print_r($data, true));
+            fclose($filew);
+        }
+        
     }
 ?>

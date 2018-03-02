@@ -1,0 +1,155 @@
+Array
+(
+    [0] => Array
+        (
+            [id] => 19
+            [0] => 19
+            [firstname] => ioannis
+            [1] => ioannis
+        )
+
+    [1] => Array
+        (
+            [id] => 18
+            [0] => 18
+            [firstname] => ioannis
+            [1] => ioannis
+        )
+
+    [2] => Array
+        (
+            [id] => 17
+            [0] => 17
+            [firstname] => ioannis
+            [1] => ioannis
+        )
+
+    [3] => Array
+        (
+            [id] => 16
+            [0] => 16
+            [firstname] => ioannis
+            [1] => ioannis
+        )
+
+    [4] => Array
+        (
+            [id] => 15
+            [0] => 15
+            [firstname] => ioannis
+            [1] => ioannis
+        )
+
+    [5] => Array
+        (
+            [id] => 14
+            [0] => 14
+            [firstname] => ioannis
+            [1] => ioannis
+        )
+
+    [6] => Array
+        (
+            [id] => 13
+            [0] => 13
+            [firstname] => ioannis
+            [1] => ioannis
+        )
+
+    [7] => Array
+        (
+            [id] => 12
+            [0] => 12
+            [firstname] => lumakos
+            [1] => lumakos
+        )
+
+    [8] => Array
+        (
+            [id] => 11
+            [0] => 11
+            [firstname] => lumakos
+            [1] => lumakos
+        )
+
+    [9] => Array
+        (
+            [id] => 10
+            [0] => 10
+            [firstname] => lumakos
+            [1] => lumakos
+        )
+
+    [10] => Array
+        (
+            [id] => 9
+            [0] => 9
+            [firstname] => lumakos
+            [1] => lumakos
+        )
+
+    [11] => Array
+        (
+            [id] => 8
+            [0] => 8
+            [firstname] => lumakos
+            [1] => lumakos
+        )
+
+    [12] => Array
+        (
+            [id] => 7
+            [0] => 7
+            [firstname] => lumakos
+            [1] => lumakos
+        )
+
+    [13] => Array
+        (
+            [id] => 6
+            [0] => 6
+            [firstname] => lumakos
+            [1] => lumakos
+        )
+
+    [14] => Array
+        (
+            [id] => 5
+            [0] => 5
+            [firstname] => lumakos
+            [1] => lumakos
+        )
+
+    [15] => Array
+        (
+            [id] => 4
+            [0] => 4
+            [firstname] => lumakos
+            [1] => lumakos
+        )
+
+    [16] => Array
+        (
+            [id] => 3
+            [0] => 3
+            [firstname] => test
+            [1] => test
+        )
+
+    [17] => Array
+        (
+            [id] => 2
+            [0] => 2
+            [firstname] => test
+            [1] => test
+        )
+
+    [18] => Array
+        (
+            [id] => 1
+            [0] => 1
+            [firstname] => test
+            [1] => test
+        )
+
+)
