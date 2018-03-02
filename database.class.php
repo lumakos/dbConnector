@@ -80,7 +80,8 @@
             $query->execute();
 
             /**
-             * Missing Code, do not work as I expect
+             * Missing Code, does not work as I expect
+             * Please remove comments if you want to check the query caching
              */
             //$this->executeQueryCaching($sql);
 
@@ -264,14 +265,30 @@
                  * execute and fetch  the results/
                  * Missing code
                  */
-                // $pdo = new PDO('mysql:host=localhost;dbname=test', 'root', '');
-                // $stmt = $pdo->prepare($sql);
-                // $stmt->execute();
-                // $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                // $resultsJSON = json_encode($results);
-                // file_put_contents($cacheFile, $resultsJSON);
-            }
+                if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
+                {
 
+                    switch($conditions['return_type'])
+                    {
+                        case 'count':
+                            $data = $query->rowCount();
+                            break;
+                        case 'single':
+                            $data = $query->fetch(PDO::FETCH_ASSOC);
+                            break;
+                        default:
+                            $data = '';
+                    }
+                } else
+                {
+                    if($query->rowCount() > 0)
+                    {
+                        $data = $query->fetchAll();
+                    }
+                }
+                $resultsJSON = json_encode($results);
+                file_put_contents($cacheFile, $resultsJSON);
+            }
         }
     }
 ?>
