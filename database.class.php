@@ -83,7 +83,7 @@
              * Missing Code, does not work as I expect
              * Please remove comments if you want to check the query caching
              */
-            //$this->executeQueryCaching($sql);
+            $this->executeQueryCaching($sql);
 
             if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
             {
@@ -214,6 +214,7 @@
 
         /**
          * Execute functionality for query caching
+         * @param string sql query
          */
         public function executeQueryCaching($sql)
         {
@@ -236,13 +237,15 @@
                 $this->storeCacheFile($sqlCacheName, $sql);
             }
 
-            $this->queryCaching($sqlCacheName, $path, $cacheTimeSeconds);
+            $this->queryCaching($path, $cacheTimeSeconds);
         }
 
         /**
          * Cache the results of an SQL query to the file system
+         * @param string the name of cache's file
+         * @param string the time of the last modufication
          */
-        public function queryCaching($sqlCacheName, $cacheFile, $cacheTimeSeconds)
+        public function queryCaching($cacheFile, $cacheTimeSeconds)
         {
             $results = array();
 

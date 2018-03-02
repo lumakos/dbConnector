@@ -55,7 +55,7 @@
         /**
          * Cache the results of an SQL query to the file system
          */
-        abstract protected function queryCaching($sqlCacheName, $cacheFile, $cacheTimeSeconds);
+        abstract protected function queryCaching($cacheFile, $cacheTimeSeconds);
 
         /**
          * Execute functionality for query caching
