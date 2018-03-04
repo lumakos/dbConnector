@@ -79,33 +79,48 @@
             $query = $this->connection->prepare($sql);
             $query->execute();
 
-            /**
-             * Missing Code, does not work as I expect
-             * Please remove comments if you want to check the query caching
-             */
-            $this->executeQueryCaching($sql);
+            $cacheArray = $this->initCacheArray($sql);
 
-            if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
-            {
+             if ($this->isCached($cacheArray['cacheFile'], $cacheArray['cacheTimeSeconds'])) {
+                echo 'is cashed';
 
-                switch($conditions['return_type'])
+                /* Store date */
+                $fileContents = file_get_contents($cacheArray['cacheFile']);
+
+                /* Decode the JSON back into an array. */
+                $data = json_decode($fileContents, true);
+
+             } else {
+                /* Execute SELECT query */
+                if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
                 {
-                    case 'count':
-                        $data = $query->rowCount();
-                        break;
-                    case 'single':
-                        $data = $query->fetch(PDO::FETCH_ASSOC);
-                        break;
-                    default:
-                        $data = '';
-                }
-            } else
-            {
-                if($query->rowCount() > 0)
+    
+                    switch($conditions['return_type'])
+                    {
+                        case 'count':
+                            $data = $query->rowCount();
+                            break;
+                        case 'single':
+                            $data = $query->fetch(PDO::FETCH_ASSOC);
+                            break;
+                        default:
+                            $data = '';
+                    }
+                } else
                 {
-                    $data = $query->fetchAll();
+                    if($query->rowCount() > 0)
+                    {
+                        $data = $query->fetchAll();
+                    }
                 }
-            }
+
+                /* Create cache file */
+                $this->storeCacheFile($cacheArray['sqlCacheName'], $data);
+                /* Store date */
+                $resultsJSON = json_encode($data);
+
+                $data = file_put_contents($cacheArray['cacheFile'], $resultsJSON);
+             }
 
             return !empty($data)?$data:false;
         }
@@ -210,88 +225,6 @@
             $sql = "DELETE FROM ".$table.$whereSql;
             $delete = $this->connection->exec($sql);
             return $delete?$delete:false;
-        }
-
-        /**
-         * Execute functionality for query caching
-         * @param string sql query
-         */
-        public function executeQueryCaching($sql)
-        {
-            /*Generate an MD5 hash from the SQL query above.*/
-            $sqlCacheName = md5($sql) . ".cache";
-  
-            /* The name of our cache folder. */
-            $cache = 'cache';
-                       
-            /* Full path to cache file. */
-            $cacheFile = $cache . "/" . $sqlCacheName;
-            
-            /* Cache time in seconds. 60 * 60 = one hour. */
-            $cacheTimeSeconds = (60 * 60);
-
-            /* Checks cache file if exists in folder cache */
-            $path = "cache/".$sqlCacheName;
-            if (!file_exists($path))
-            {
-                $this->storeCacheFile($sqlCacheName, $sql);
-            }
-
-            $this->queryCaching($path, $cacheTimeSeconds);
-        }
-
-        /**
-         * Cache the results of an SQL query to the file system
-         * @param string the name of cache's file
-         * @param string the time of the last modufication
-         */
-        public function queryCaching($cacheFile, $cacheTimeSeconds)
-        {
-            $results = array();
-
-            /**
-             * If the file exists and the filemtime time is larger than
-             * our cache expiry time.
-             */
-            if(file_exists($cacheFile) && (filemtime($cacheFile) > (time() - ($cacheTimeSeconds))))
-            {
-                echo 'Cache file found. Use cache file instead of querying database.';
-                /* Get the contents of our cached file. */
-                $fileContents = file_get_contents($cacheFile);
-                /* Decode the JSON back into an array. */
-                $results = json_decode($fileContents, true);
-            } else{
-                echo 'Valid cache file not found. Query database.';
-                /**
-                 * Cache file doesn't exist or has expired.
-                 * Connect to Database using PDO, prepare the SQL, 
-                 * execute and fetch  the results/
-                 * Missing code
-                 */
-                if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
-                {
-
-                    switch($conditions['return_type'])
-                    {
-                        case 'count':
-                            $data = $query->rowCount();
-                            break;
-                        case 'single':
-                            $data = $query->fetch(PDO::FETCH_ASSOC);
-                            break;
-                        default:
-                            $data = '';
-                    }
-                } else
-                {
-                    if($query->rowCount() > 0)
-                    {
-                        $data = $query->fetchAll();
-                    }
-                }
-                $resultsJSON = json_encode($results);
-                file_put_contents($cacheFile, $resultsJSON);
-            }
         }
     }
 ?>

@@ -13,7 +13,7 @@
 
     /* Select data from database */
     $rows = $db->selectData('MyGuests', array('order_by'=>'id DESC'));
-    // var_dump($rows);
+    var_dump($rows);
 
     /* Insert data */
     // $tblName = "MyGuests";

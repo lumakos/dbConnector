@@ -10,5 +10,7 @@
         public function commitTransaction();
         public function rollbackTransaction();
         public function storeCacheFile($sqlCacheName, $data);
+        public function isCached($cacheFile, $cacheTimeSeconds);
+        public function initCacheArray($sql);
     }
 ?>
