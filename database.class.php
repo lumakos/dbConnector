@@ -79,9 +79,15 @@
             $query = $this->connection->prepare($sql);
             $query->execute();
 
+            /**
+             * Initialize cache array with infos that we need for query caching
+             */
             $cacheArray = $this->initCacheArray($sql);
 
-             if ($this->isCached($cacheArray['cacheFile'], $cacheArray['cacheTimeSeconds'])) {
+            /**
+             * Checks if we have cached data in folded "cache"
+             */
+            if ($this->isCached($cacheArray['cacheFile'], $cacheArray['cacheTimeSeconds'])) {
                 echo 'is cashed';
 
                 /* Store date */
@@ -90,7 +96,7 @@
                 /* Decode the JSON back into an array. */
                 $data = json_decode($fileContents, true);
 
-             } else {
+            } else {
                 /* Execute SELECT query */
                 if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
                 {
@@ -118,9 +124,8 @@
                 $this->storeCacheFile($cacheArray['sqlCacheName'], $data);
                 /* Store date */
                 $resultsJSON = json_encode($data);
-
                 $data = file_put_contents($cacheArray['cacheFile'], $resultsJSON);
-             }
+            }
 
             return !empty($data)?$data:false;
         }
