@@ -21,21 +21,21 @@
         /**
          * Connect database
          */
-        abstract protected function openConnection();
+        abstract public function openConnection();
 
         /**
          * Returns rows from the database based on the conditions
          * @param string name of the table
          * @param array select, where, order_by, limit and return_type conditions
          */
-        abstract protected function selectData($table, $conditions = array());
+        abstract public function selectData($table, $conditions = array());
 
         /**
          * Insert data into the database
          * @param string name of the table
          * @param array the data for inserting into the table
          */
-        abstract protected function insertData($table,$data);
+        abstract public function insertData($table,$data);
         
         /**
          * Update data into the database
@@ -43,39 +43,19 @@
          * @param array the data for updating into the table
          * @param array where condition on updating data
          */
-        abstract protected function updateData($table, $data, $conditions);
+        abstract public function updateData($table, $data, $conditions);
 
         /**
          * Delete data from the database
          * @param string name of the table
          * @param array where condition on deleting data
          */
-        abstract protected function deleteData($table, $conditions);
-
-        /**
-         * Cache the results of an SQL query to the file system
-         */
-        abstract protected function queryCaching($cacheFile, $cacheTimeSeconds);
-
-        /**
-         * Execute functionality for query caching
-         */
-        abstract protected function executeQueryCaching($sql);
+        abstract public function deleteData($table, $conditions);
 
         /**
          * Constructor
          */
-        protected function __construct($dbDriver, $host, $port, $username, $password, $dbName, $unixSocket, $charset)
-        {
-            $this->dbDriver = $dbDriver;
-            $this->host = $host;
-            $this->port = $port;
-            $this->username = $username;
-            $this->password = $password;
-            $this->dbName = $dbName;
-            $this->unixSocket = $unixSocket;
-            $this->charset = $charset;
-        }
+        abstract public function __construct($config);
 
         /**
          * @return bool
@@ -119,12 +99,48 @@
 
         /**
          * Store cache file in cache folder
+         * @param string name of cache file
+         * @param array data from select query
          */
         public function storeCacheFile($sqlCacheName, $data)
-        {   
+        {
+            /* Write data to file */
             $filew = fopen("cache/" . $sqlCacheName, 'w');
             fwrite($filew, print_r($data, true));
             fclose($filew);
+        }
+
+        /**
+         * Checks if cache file exists and is modified less than one hour
+         * @param string cache file
+         * @param int total minutes before expiration
+         * @return bool
+         */
+        public function isCached($cacheFile, $cacheTimeSeconds)
+        {
+            return (file_exists($cacheFile) && (filemtime($cacheFile) > (time() - ($cacheTimeSeconds))));
+        }
+
+        /**
+         * Execute functionality for query caching
+         * @param string select query
+         * @return array
+         */
+        public function initCacheArray($sql)
+        {
+            /*Generate an MD5 hash from the SQL query above.*/
+            $cacheArray['sqlCacheName'] = md5($sql) . ".cache";
+  
+            /* The name of our cache folder. */
+            $cacheArray['cache'] = 'cache';
+                       
+            /* Full path to cache file. */
+            $cacheArray['cacheFile'] = $cacheArray['cache'] . "/" . $cacheArray['sqlCacheName'];
+            
+            /* Cache time in seconds. 60 * 60 = one hour. */
+            $cacheArray['cacheTimeSeconds'] = (60 * 60);
+
+            return $cacheArray;
         }
         
     }

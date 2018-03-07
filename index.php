@@ -1,19 +1,26 @@
 <?php
 
-    include_once 'database.class.php';
+    include_once 'mysqldatabase.class.php';
 
+    /* parse config data */
     $config = parse_ini_file('config.ini');
 
-    $db = new Database($config['driver'], $config['host'], $config['port'], $config['username'], $config['password'], $config['dbname'], $config['unix_socket'], $config['charset']);
+    /** Initialize database connection */
+    $db = new MysqlDatabase($config);
 
     /* Connect to database */
     $db->openConnection();
 
+    /* Start transaction */
     $db->startTransaction();
 
     /* Select data from database */
     $rows = $db->selectData('MyGuests', array('order_by'=>'id DESC'));
-    // var_dump($rows);
+
+    /**
+     * If you want to check the rest of queries, please remove the comments of code below
+     * and comment out the line 44
+     */
 
     /* Insert data */
     // $tblName = "MyGuests";
@@ -37,12 +44,13 @@
     *  the changes, else rollback the transaction
     */
     // if (!$insertedData && !$updatedData && !$deletedData) 
-
     if (!empty($insertedData)) 
     {
+        /* commit transaction */
         $db->commitTransaction();
     } else 
     {
+        /* rollback the transaction */
         $db->rollbackTransaction();
     }
 

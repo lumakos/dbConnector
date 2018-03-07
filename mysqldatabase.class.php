@@ -5,14 +5,22 @@
     /**
      * Database connection
      */
-    class Database extends DatabaseManager
+    class MysqlDatabase extends DatabaseManager
     {
         /**
          * Constructor
+         * @param array config
          */
-        public function __construct($dbDriver, $host, $port, $username, $password, $dbName, $unixSocket, $charset)
+        public function __construct($config)
         {
-            parent::__construct($dbDriver, $host, $port, $username, $password, $dbName, $unixSocket, $charset);
+            $this->dbDriver = array_key_exists('driver', $config) ? $config['driver'] : NULL;
+            $this->host = array_key_exists('host', $config) ? $config['host'] : NULL;
+            $this->port = array_key_exists('port', $config) ? $config['port'] : NULL;
+            $this->username = array_key_exists('username', $config) ? $config['username'] : NULL;
+            $this->password = array_key_exists('password', $config) ? $config['password'] : NULL;
+            $this->dbName = array_key_exists('dbname', $config) ? $config['dbname'] : NULL;
+            $this->unixSocket = array_key_exists('unix_socket', $config) ? $config['unix_socket'] : NULL;
+            $this->charset = array_key_exists('charset', $config) ? $config['charset'] : NULL;
         }
 
         /**
@@ -57,7 +65,7 @@
                 foreach($conditions['where'] as $key => $value)
                 {
                     $pre = ($i > 0)?' AND ':'';
-                    $sql .= $pre.$key." = '".$value."'";
+                    $sql .= $pre.mysql_real_escape_string($key)." = '".mysql_real_escape_string($value)."'";
                     $i++;
                 }
             }
@@ -79,12 +87,7 @@
             $query = $this->connection->prepare($sql);
             $query->execute();
 
-            /**
-             * Missing Code, does not work as I expect
-             * Please remove comments if you want to check the query caching
-             */
-            $this->executeQueryCaching($sql);
-
+            /* Execute SELECT query */
             if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
             {
 
@@ -106,6 +109,56 @@
                     $data = $query->fetchAll();
                 }
             }
+            /* Fetch all of the values of the first column */
+            // $data = $query->fetchAll();
+
+            // /**
+            //  * Initialize cache array with infos that we need for query caching
+            //  */
+            // $cacheArray = $this->initCacheArray($sql);
+
+            // /**
+            //  * Checks if we have cached data in folded "cache"
+            //  */
+            // if ($this->isCached($cacheArray['cacheFile'], $cacheArray['cacheTimeSeconds'])) {
+            //     echo 'is cashed';
+
+            //     /* Store date */
+            //     $fileContents = file_get_contents($cacheArray['cacheFile']);
+
+            //     /* Decode the JSON back into an array. */
+            //     $data = json_decode($fileContents, true);
+
+            // } else {
+            //     /* Execute SELECT query */
+            //     if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
+            //     {
+    
+            //         switch($conditions['return_type'])
+            //         {
+            //             case 'count':
+            //                 $data = $query->rowCount();
+            //                 break;
+            //             case 'single':
+            //                 $data = $query->fetch(PDO::FETCH_ASSOC);
+            //                 break;
+            //             default:
+            //                 $data = '';
+            //         }
+            //     } else
+            //     {
+            //         if($query->rowCount() > 0)
+            //         {
+            //             $data = $query->fetchAll();
+            //         }
+            //     }
+
+            //     /* Create cache file */
+            //     $this->storeCacheFile($cacheArray['sqlCacheName'], $data);
+            //     /* Store date */
+            //     $resultsJSON = json_encode($data);
+            //     $data = file_put_contents($cacheArray['cacheFile'], $resultsJSON);
+            // }
 
             return !empty($data)?$data:false;
         }
@@ -210,88 +263,6 @@
             $sql = "DELETE FROM ".$table.$whereSql;
             $delete = $this->connection->exec($sql);
             return $delete?$delete:false;
-        }
-
-        /**
-         * Execute functionality for query caching
-         * @param string sql query
-         */
-        public function executeQueryCaching($sql)
-        {
-            /*Generate an MD5 hash from the SQL query above.*/
-            $sqlCacheName = md5($sql) . ".cache";
-  
-            /* The name of our cache folder. */
-            $cache = 'cache';
-                       
-            /* Full path to cache file. */
-            $cacheFile = $cache . "/" . $sqlCacheName;
-            
-            /* Cache time in seconds. 60 * 60 = one hour. */
-            $cacheTimeSeconds = (60 * 60);
-
-            /* Checks cache file if exists in folder cache */
-            $path = "cache/".$sqlCacheName;
-            if (!file_exists($path))
-            {
-                $this->storeCacheFile($sqlCacheName, $sql);
-            }
-
-            $this->queryCaching($path, $cacheTimeSeconds);
-        }
-
-        /**
-         * Cache the results of an SQL query to the file system
-         * @param string the name of cache's file
-         * @param string the time of the last modufication
-         */
-        public function queryCaching($cacheFile, $cacheTimeSeconds)
-        {
-            $results = array();
-
-            /**
-             * If the file exists and the filemtime time is larger than
-             * our cache expiry time.
-             */
-            if(file_exists($cacheFile) && (filemtime($cacheFile) > (time() - ($cacheTimeSeconds))))
-            {
-                echo 'Cache file found. Use cache file instead of querying database.';
-                /* Get the contents of our cached file. */
-                $fileContents = file_get_contents($cacheFile);
-                /* Decode the JSON back into an array. */
-                $results = json_decode($fileContents, true);
-            } else{
-                echo 'Valid cache file not found. Query database.';
-                /**
-                 * Cache file doesn't exist or has expired.
-                 * Connect to Database using PDO, prepare the SQL, 
-                 * execute and fetch  the results/
-                 * Missing code
-                 */
-                if(array_key_exists("return_type",$conditions) && $conditions['return_type'] != 'all')
-                {
-
-                    switch($conditions['return_type'])
-                    {
-                        case 'count':
-                            $data = $query->rowCount();
-                            break;
-                        case 'single':
-                            $data = $query->fetch(PDO::FETCH_ASSOC);
-                            break;
-                        default:
-                            $data = '';
-                    }
-                } else
-                {
-                    if($query->rowCount() > 0)
-                    {
-                        $data = $query->fetchAll();
-                    }
-                }
-                $resultsJSON = json_encode($results);
-                file_put_contents($cacheFile, $resultsJSON);
-            }
         }
     }
 ?>
